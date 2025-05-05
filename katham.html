@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Voice Controlled Appliance</title>
+  <style>
+    #status {
+      font-size: 24px;
+      margin-top: 20px;
+    }
+    #light {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: gray;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Voice Controlled Light</h1>
+  <button onclick="startListening()">Start Voice Control</button>
+  <div id="status">Say "turn on the light" or "turn off the light"</div>
+  <div id="light"></div>
+
+  <script>
+    const light = document.getElementById("light");
+    const status = document.getElementById("status");
+
+    function startListening() {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Your browser does not support speech recognition.");
+        return;
+      }
+
+      const recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = "en-US";
+
+      recognition.onstart = () => {
+        status.innerText = "Listening...";
+      };
+
+      recognition.onresult = (event) => {
+        const command = event.results[0][0].transcript.toLowerCase();
+        status.innerText = `You said: "${command}"`;
+
+        if (command.includes("turn on the light")) {
+          light.style.background = "yellow";
+        } else if (command.includes("turn off the light")) {
+          light.style.background = "gray";
+        } else {
+          status.innerText += " (Command not recognized)";
+        }
+      };
+
+      recognition.onerror = (event) => {
+        status.innerText = "Error occurred: " + event.error;
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
